@@ -85,7 +85,7 @@ puts json # => {
 
 ### Command line tool
 
-    $ echo '{foo:"bar", zoo:"baz"}' | js2json
+    $ echo '{foo:"bar", zoo:"baz"}' | js2json --bracket-script
 
 ## Contributing
 
