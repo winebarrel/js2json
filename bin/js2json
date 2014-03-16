@@ -1,0 +1,50 @@
+#!/usr/bin/env ruby
+$: << File.expand_path("#{File.dirname __FILE__}/../lib")
+require 'rubygems'
+require 'js2json'
+require 'open-uri'
+require 'optparse'
+
+Version = Js2json::VERSION
+
+input  = '-'
+output = '-'
+options = {}
+
+def xopen(path, mode = 'r')
+  if path == '-'
+    yield(mode['w'] ? $stdout : $stdin)
+  else
+    open(path, mode) {|f| yield(f) }
+  end
+end
+
+def create_converter(expr)
+  case (expr || '').strip
+  when /\A(proc|Proc|lambda)\b/, /\A->/
+    Object.new.instance_eval(expr)
+  when /\Afunction\b/
+    V8::Context.new.eval("(#{expr})")
+  end
+end
+
+ARGV.options do |opt|
+  begin
+    opt.on('-i', '--input INPUT')        {|v| input = v }
+    opt.on('-o', '--output OUTPUT')      {|v| output = v }
+    opt.on('',   '--bracket-script')     {    options[:bracket_script] = true }
+    opt.on('',   '--conv CONVERTER')     {|v| options[:conv] = create_converter(v) }
+    opt.on('',   '--key-conv CONVERTER') {|v| options[:key_conv] = create_converter(v) }
+    opt.parse!
+  rescue => e
+    $stderr.puts e
+    exit 1
+  end
+end
+
+script = xopen(input) {|f| f.read }
+json = Js2json.js2json(script, options)
+
+xopen(input, 'w') do |f|
+  f.puts json
+end
