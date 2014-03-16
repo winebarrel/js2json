@@ -2,6 +2,9 @@
 
 It is a library to convert from JavaScript to JSON.
 
+[![Gem Version](https://badge.fury.io/rb/js2json.png)](http://badge.fury.io/rb/js2json)
+[![Build Status](https://drone.io/github.com/winebarrel/js2json/status.png)](https://drone.io/github.com/winebarrel/js2json/latest)
+
 ## Installation
 
 Add this line to your application's Gemfile:
